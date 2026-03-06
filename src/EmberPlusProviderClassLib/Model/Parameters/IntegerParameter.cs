@@ -35,7 +35,7 @@ namespace EmberPlusProviderClassLib.Model.Parameters
 {
     public class IntegerParameter : Parameter<long>
     {
-        public IntegerParameter(int number, Element parent, string identifier, Dispatcher dispatcher, int min, int max, bool isWritable, bool isPersistable = false)
+        public IntegerParameter(int number, Element parent, string identifier, Dispatcher dispatcher, long min, long max, bool isWritable, bool isPersistable = false)
         : base(number, parent, identifier, dispatcher, isWritable, isPersistable)
         {
             Minimum = min;
@@ -54,7 +54,7 @@ namespace EmberPlusProviderClassLib.Model.Parameters
         {
             try
             {
-                long l = Convert.ToInt32(newValue);
+                long l = Convert.ToInt64(newValue);
                 if (Value != l)
                 {
                     Value = l;
