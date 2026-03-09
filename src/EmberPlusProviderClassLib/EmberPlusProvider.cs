@@ -48,6 +48,8 @@ namespace EmberPlusProviderClassLib
         public Node ProviderRoot { get; protected set; }
         public Dispatcher dispatcher { get; protected set; }
 
+        public int Port { get; }
+
         protected GlowListener listener;
 
         /// <summary>
@@ -68,14 +70,18 @@ namespace EmberPlusProviderClassLib
         /// <param name="port">EmBER+ provider port</param>
         /// <param name="identifier">EmBER+ root identifier</param>
         /// <param name="description">EmBER+ root description</param>
-        public EmberPlusProvider(int port, string identifier, string description)
+        /// <param name="deferedListen">whether to wait before starting ember+ listener (for tree to be fully built first)</param>
+        public EmberPlusProvider(int port, string identifier, string description, bool deferedListen = false)
         {
             try
             {
-                int maxPackageLength = ProtocolParameters.MaximumPackageLength;
                 dispatcher = new Dispatcher(); // { Root = Node.CreateRoot() };
                 ProviderRoot = new Node(1, dispatcher.Root, identifier) { Description = description };
-                listener = new GlowListener(port, maxPackageLength, dispatcher);
+                Port = port;
+                if(!deferedListen)
+                {
+                    StartListener();
+                }
 
                 string message = $"EmberPlusProvider: Initializing the EmBER+ provider on port: {port}, identifier: {identifier}, description: {description}";
                 //Console.WriteLine(message);
@@ -84,6 +90,19 @@ namespace EmberPlusProviderClassLib
             catch (Exception ex)
             {
                 Debug.WriteLine("EmberPlusProvider: Exception: ", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Start a TCP listener (if it isn't started already). You generally want to call this after
+        /// you've built your full Ember+ tree if you called the constructor with deferedListen = true.
+        /// This allows you to not accept any client connections until you've fully built your tree.
+        /// </summary>
+        public void StartListener()
+        {
+            if(listener == null)
+            {
+                listener = new GlowListener(Port, ProtocolParameters.MaximumPackageLength, dispatcher);
             }
         }
 
