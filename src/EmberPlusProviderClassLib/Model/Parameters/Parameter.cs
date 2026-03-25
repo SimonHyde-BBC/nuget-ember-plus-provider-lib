@@ -28,6 +28,8 @@
  */
  #endregion
 
+using System;
+
 namespace EmberPlusProviderClassLib.Model.Parameters
 {
     public abstract class Parameter<T> : ParameterBase
@@ -35,6 +37,13 @@ namespace EmberPlusProviderClassLib.Model.Parameters
         protected Parameter(int number, Element parent, string identifier, Dispatcher dispatcher, bool isWritable, bool isPersistable = false)
         : base(number, parent, identifier, dispatcher, isWritable, isPersistable)
         {
+        }
+
+        public EventHandler<T> ValueChanged;
+
+        protected virtual void OnValueChanged(T newValue)
+        {
+            ValueChanged?.Invoke(this, newValue);
         }
 
         public T Value
@@ -46,6 +55,7 @@ namespace EmberPlusProviderClassLib.Model.Parameters
                 {
                     _value = value;
                     Dispatcher.NotifyParameterValueChanged(this);
+                    OnValueChanged(value);
                 }
             }
         }
