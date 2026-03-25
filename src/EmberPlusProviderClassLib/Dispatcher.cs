@@ -293,6 +293,11 @@ namespace EmberPlusProviderClassLib
 
                 if (parameter != null)
                 {
+                    if(!parameter.IsWritable)
+                    {
+                        return;
+                    }
+
                     var glowValue = glow.Value;
 
                     if (glowValue != null)
